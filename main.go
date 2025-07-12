@@ -5,17 +5,60 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	apireq "github.com/jja42/GoPokedex/api_req"
 )
 
+type cliCommand struct {
+	name        string
+	description string
+	callback    func(*apireq.Config) error
+}
+
+var commands map[string]cliCommand
+
+var config *apireq.Config
+
+func init() {
+	commands = map[string]cliCommand{
+		"exit": {
+			name:        "exit",
+			description: "Exit the Pokedex",
+			callback:    commandExit,
+		},
+		"help": {
+			name:        "help",
+			description: "Displays a help message",
+			callback:    commandHelp,
+		},
+		"map": {
+			name:        "map",
+			description: "Displays next 20 location areas in the Pokemon world.",
+			callback:    commandMap,
+		},
+		"mapb": {
+			name:        "mapb",
+			description: "Displays previous 20 location areas in the Pokemon world",
+			callback:    commandMapb,
+		},
+	}
+
+	config = &apireq.Config{
+		NextURL: "",
+		PrevURL: "",
+	}
+}
+
 func main() {
+
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
 		fmt.Print("Pokedex >")
 		if scanner.Scan() {
 			text := scanner.Text()
 			clean_input := cleanInput(text)
-			word := clean_input[0]
-			fmt.Printf("Your command was: %s\n", word)
+			input := clean_input[0]
+			handleinput(input, commands, config)
 		}
 	}
 }
