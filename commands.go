@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	apireq "github.com/jja42/GoPokedex/api_req"
+	apireq "github.com/jja42/GoPokedex/internal/api_req"
 )
 
 func handleinput(input string, commands map[string]cliCommand, config *apireq.Config) {

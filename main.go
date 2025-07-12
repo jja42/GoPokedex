@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	apireq "github.com/jja42/GoPokedex/api_req"
+	apireq "github.com/jja42/GoPokedex/internal/api_req"
 )
 
 type cliCommand struct {
