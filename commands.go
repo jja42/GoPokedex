@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"strconv"
-	"strings"
 
 	apireq "github.com/jja42/GoPokedex/api_req"
 )
@@ -35,43 +33,31 @@ func commandHelp(config *apireq.Config) error {
 }
 
 func commandMap(config *apireq.Config) error {
-	url := config.NextURL
-	if url == "" {
-		url = "https://pokeapi.co/api/v2/location-area/0"
+	if config.NextURL == nil {
+		url := baseURL + "/location-area"
+		config.NextURL = &url
 	}
 
-	lastSlash := strings.LastIndex(url, "/")
-	baseurl := url[:lastSlash+1]
-	id := url[lastSlash+1:]
-	num, _ := strconv.Atoi(id)
+	data := apireq.GetRequest(*config.NextURL)
 
-	for i := 0; i < 20; i++ {
-		num++
-		id = strconv.Itoa(num)
-		full_url := baseurl + id
-		data := apireq.GetRequest(full_url)
-		location, _ := apireq.RequestToLocation(data)
+	batch, err := apireq.RequestToLocations(data)
+	if err != nil {
+		return err
+	}
+
+	for _, location := range batch.Results {
 		fmt.Println(location.Name)
 	}
 
-	if num > 39 {
-		id = strconv.Itoa(num - 39)
-		full_url := baseurl + id
-		config.PrevURL = full_url
-	} else {
-		config.PrevURL = ""
-	}
-
-	id = strconv.Itoa(num)
-	full_url := baseurl + id
-	config.NextURL = full_url
+	config.PrevURL = batch.Previous
+	config.NextURL = batch.Next
 
 	return nil
 }
 
 func commandMapb(config *apireq.Config) error {
 	url := config.PrevURL
-	if url == "" {
+	if url == nil {
 		fmt.Println("You're on the first page")
 		return nil
 	}

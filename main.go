@@ -19,6 +19,10 @@ var commands map[string]cliCommand
 
 var config *apireq.Config
 
+const (
+	baseURL = "https://pokeapi.co/api/v2"
+)
+
 func init() {
 	commands = map[string]cliCommand{
 		"exit": {
@@ -44,8 +48,8 @@ func init() {
 	}
 
 	config = &apireq.Config{
-		NextURL: "",
-		PrevURL: "",
+		NextURL: nil,
+		PrevURL: nil,
 	}
 }
 

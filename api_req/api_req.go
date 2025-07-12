@@ -9,14 +9,18 @@ import (
 )
 
 type Config struct {
-	NextURL string
-	PrevURL string
-	ID      int
+	NextURL *string
+	PrevURL *string
 }
 
-type LocationArea struct {
-	ID   int
-	Name string
+type RespLocationBatch struct {
+	Count    int     `json:"count"`
+	Next     *string `json:"next"`
+	Previous *string `json:"previous"`
+	Results  []struct {
+		Name string `json:"name"`
+		URL  string `json:"url"`
+	} `json:"results"`
 }
 
 func GetRequest(url string) []byte {
@@ -35,12 +39,12 @@ func GetRequest(url string) []byte {
 	return body
 }
 
-func RequestToLocation(data []byte) (LocationArea, error) {
-	location := LocationArea{}
-	err := json.Unmarshal(data, &location)
+func RequestToLocations(data []byte) (RespLocationBatch, error) {
+	locations := RespLocationBatch{}
+	err := json.Unmarshal(data, &locations)
 	if err != nil {
 		fmt.Println(err)
-		return location, err
+		return locations, err
 	}
-	return location, nil
+	return locations, nil
 }
