@@ -37,9 +37,23 @@ type LocationAreaData struct {
 }
 
 type PokemonData struct {
-	ID       int
-	Name     string
-	Base_Exp int
+	ID              int
+	Name            string
+	Base_Experience int
+	Height          int
+	Stats           []struct {
+		BaseStat int `json:"base_stat"`
+		Stat     struct {
+			Name string
+		}
+	}
+	Types []struct {
+		Slot int
+		Type struct {
+			Name string
+		}
+	}
+	Weight int
 }
 
 func GetRequest(url string, config *Config) []byte {
@@ -55,8 +69,6 @@ func GetRequest(url string, config *Config) []byte {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	config.Cache.Add(url, data)
 
 	return data
 }

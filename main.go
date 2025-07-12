@@ -50,14 +50,19 @@ func init() {
 			callback:    commandMapb,
 		},
 		"explore": {
-			name:        "explore",
-			description: "Explores a specific area. Please provide area name as it appears in map as a parameter",
+			name:        "explore <location_name>",
+			description: "Explores a specific area.",
 			callback:    commandExplore,
 		},
 		"catch": {
-			name:        "catch",
-			description: "Attempt to catch a pokemon. Please provide pokemon name as a parameter",
+			name:        "catch <pokemon_name>",
+			description: "Attempt to catch a pokemon.",
 			callback:    commandCatch,
+		},
+		"inspect <pokemon_name>": {
+			name:        "inspect",
+			description: "View data of a pokemon you've caught.",
+			callback:    commandInspect,
 		},
 	}
 

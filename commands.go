@@ -55,6 +55,7 @@ func commandMap(config *apireq.Config, params []string) error {
 		fmt.Println(location.Name)
 	}
 
+	config.Cache.Add(*config.NextURL, data)
 	config.PrevURL = batch.Previous
 	config.NextURL = batch.Next
 
@@ -89,6 +90,8 @@ func commandExplore(config *apireq.Config, params []string) error {
 		return err
 	}
 
+	config.Cache.Add(url, data)
+
 	fmt.Printf("Exploring %s...\n", locationName)
 
 	fmt.Println("Found Pokemon:")
@@ -118,15 +121,51 @@ func commandCatch(config *apireq.Config, params []string) error {
 		return err
 	}
 
-	fmt.Printf("Throwing a Pokeball at %s...\n", pokemon.Name)
+	fmt.Printf("Throwing a Pokeball at %s...\n", pokemonName)
 
-	r := rand.Intn(pokemon.Base_Exp)
+	r := rand.Intn(pokemon.Base_Experience)
 
 	if r > 40 {
 		fmt.Printf("%s escaped!\n", pokemonName)
 
 	} else {
 		fmt.Printf("%s was caught!\n", pokemonName)
+		config.Cache.Add(url, data)
+		fmt.Printf("%s was added to your Pokedex!\n", pokemonName)
+		fmt.Println("You may now inspect it or view it in your Pokedex.")
+	}
+
+	return nil
+}
+
+func commandInspect(config *apireq.Config, params []string) error {
+	pokemonName := params[0]
+	url := baseURL + "/pokemon/" + pokemonName
+
+	if cached_data, exists := config.Cache.Get(url); exists {
+		pokemon, err := apireq.RequestToPokemon(cached_data)
+		if err != nil {
+			return err
+		}
+		fmt.Printf("Name: %s\n", pokemon.Name)
+		fmt.Printf("Height: %d\n", pokemon.Height)
+		fmt.Printf("Weight: %d\n", pokemon.Weight)
+
+		fmt.Println()
+		fmt.Println("Stats")
+
+		for _, stat := range pokemon.Stats {
+			fmt.Printf("%s: %v\n", stat.Stat.Name, stat.BaseStat)
+		}
+
+		fmt.Println()
+		fmt.Println("Types")
+		for _, typeInfo := range pokemon.Types {
+			fmt.Printf("%s\n", typeInfo.Type.Name)
+		}
+
+	} else {
+		fmt.Println("You have not yet caught that pokemon.")
 	}
 
 	return nil
