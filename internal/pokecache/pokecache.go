@@ -1,7 +1,6 @@
 package pokecache
 
 import (
-	"fmt"
 	"sync"
 	"time"
 )
@@ -34,8 +33,7 @@ func (c *Cache) Add(key string, value []byte) {
 	}
 	c.Entries[key] = entry
 
-	str := fmt.Sprintf("%s was cached.", key)
-	fmt.Println(str)
+	//fmt.Printf("%s was cached.\n", key)
 }
 
 func (c *Cache) Get(key string) ([]byte, bool) {

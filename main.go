@@ -54,6 +54,11 @@ func init() {
 			description: "Explores a specific area. Please provide area name as it appears in map as a parameter",
 			callback:    commandExplore,
 		},
+		"catch": {
+			name:        "catch",
+			description: "Attempt to catch a pokemon. Please provide pokemon name as a parameter",
+			callback:    commandCatch,
+		},
 	}
 
 	api_cache = pokecache.NewCache(5 * time.Second)

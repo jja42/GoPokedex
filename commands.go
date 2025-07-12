@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
 
 	apireq "github.com/jja42/GoPokedex/internal/api_req"
@@ -88,12 +89,44 @@ func commandExplore(config *apireq.Config, params []string) error {
 		return err
 	}
 
-	fmt.Printf("Exploring %s...", locationName)
+	fmt.Printf("Exploring %s...\n", locationName)
 
 	fmt.Println("Found Pokemon:")
 
 	for _, encounter := range location.Pokemon_Encounters {
 		fmt.Printf("- %s\n", encounter.Pokemon.Name)
+	}
+
+	return nil
+}
+
+func commandCatch(config *apireq.Config, params []string) error {
+
+	pokemonName := params[0]
+	url := baseURL + "/pokemon/" + pokemonName
+
+	var data []byte
+
+	if cached_data, exists := config.Cache.Get(url); exists {
+		data = cached_data
+	} else {
+		data = apireq.GetRequest(url, config)
+	}
+
+	pokemon, err := apireq.RequestToPokemon(data)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Throwing a Pokeball at %s...\n", pokemon.Name)
+
+	r := rand.Intn(pokemon.Base_Exp)
+
+	if r > 40 {
+		fmt.Printf("%s escaped!\n", pokemonName)
+
+	} else {
+		fmt.Printf("%s was caught!\n", pokemonName)
 	}
 
 	return nil

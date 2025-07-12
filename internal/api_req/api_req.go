@@ -16,7 +16,7 @@ type Config struct {
 	Cache   *pokecache.Cache
 }
 
-type RespLocationBatch struct {
+type LocationBatchData struct {
 	Count    int     `json:"count"`
 	Next     *string `json:"next"`
 	Previous *string `json:"previous"`
@@ -26,7 +26,7 @@ type RespLocationBatch struct {
 	} `json:"results"`
 }
 
-type LocationArea struct {
+type LocationAreaData struct {
 	ID                 int
 	Name               string
 	Pokemon_Encounters []struct {
@@ -34,6 +34,12 @@ type LocationArea struct {
 			Name string
 		}
 	}
+}
+
+type PokemonData struct {
+	ID       int
+	Name     string
+	Base_Exp int
 }
 
 func GetRequest(url string, config *Config) []byte {
@@ -55,8 +61,8 @@ func GetRequest(url string, config *Config) []byte {
 	return data
 }
 
-func RequestToLocations(data []byte) (RespLocationBatch, error) {
-	locations := RespLocationBatch{}
+func RequestToLocations(data []byte) (LocationBatchData, error) {
+	locations := LocationBatchData{}
 	err := json.Unmarshal(data, &locations)
 	if err != nil {
 		fmt.Println(err)
@@ -65,12 +71,22 @@ func RequestToLocations(data []byte) (RespLocationBatch, error) {
 	return locations, nil
 }
 
-func RequestToLocation(data []byte) (LocationArea, error) {
-	location := LocationArea{}
+func RequestToLocation(data []byte) (LocationAreaData, error) {
+	location := LocationAreaData{}
 	err := json.Unmarshal(data, &location)
 	if err != nil {
 		fmt.Println(err)
 		return location, err
 	}
 	return location, nil
+}
+
+func RequestToPokemon(data []byte) (PokemonData, error) {
+	pokemon := PokemonData{}
+	err := json.Unmarshal(data, &pokemon)
+	if err != nil {
+		fmt.Println(err)
+		return pokemon, err
+	}
+	return pokemon, nil
 }
