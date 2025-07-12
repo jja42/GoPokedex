@@ -64,6 +64,11 @@ func init() {
 			description: "View data of a pokemon you've caught.",
 			callback:    commandInspect,
 		},
+		"pokedex": {
+			name:        "pokedex",
+			description: "View a list of all of the pokemon you've caught",
+			callback:    commandPokedex,
+		},
 	}
 
 	api_cache = pokecache.NewCache(5 * time.Second)

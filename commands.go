@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"strings"
 
 	apireq "github.com/jja42/GoPokedex/internal/api_req"
 )
@@ -129,9 +130,8 @@ func commandCatch(config *apireq.Config, params []string) error {
 		fmt.Printf("%s escaped!\n", pokemonName)
 
 	} else {
-		fmt.Printf("%s was caught!\n", pokemonName)
+		fmt.Printf("%s was caught and added to your Pokedex!\n", pokemonName)
 		config.Cache.Add(url, data)
-		fmt.Printf("%s was added to your Pokedex!\n", pokemonName)
 		fmt.Println("You may now inspect it or view it in your Pokedex.")
 	}
 
@@ -166,6 +166,30 @@ func commandInspect(config *apireq.Config, params []string) error {
 
 	} else {
 		fmt.Println("You have not yet caught that pokemon.")
+	}
+
+	return nil
+}
+
+func commandPokedex(config *apireq.Config, params []string) error {
+	pokedex := make([]string, 0)
+
+	for key := range config.Cache.Entries {
+		if strings.Contains(key, "/pokemon/") {
+			data, _ := config.Cache.Get(key)
+			pokemon, _ := apireq.RequestToPokemon(data)
+			pokedex = append(pokedex, pokemon.Name)
+		}
+	}
+
+	if len(pokedex) == 0 {
+		fmt.Println("Your Pokedex is empty!")
+		return nil
+	}
+
+	fmt.Println("Your Pokedex:")
+	for _, pokemon := range pokedex {
+		fmt.Println(pokemon)
 	}
 
 	return nil
