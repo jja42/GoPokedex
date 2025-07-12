@@ -14,7 +14,7 @@ import (
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*apireq.Config) error
+	callback    func(*apireq.Config, []string) error
 }
 
 var commands map[string]cliCommand
@@ -49,6 +49,11 @@ func init() {
 			description: "Displays previous 20 location areas in the Pokemon world",
 			callback:    commandMapb,
 		},
+		"explore": {
+			name:        "explore",
+			description: "Explores a specific area. Please provide area name as it appears in map as a parameter",
+			callback:    commandExplore,
+		},
 	}
 
 	api_cache = pokecache.NewCache(5 * time.Second)
@@ -69,7 +74,8 @@ func main() {
 			text := scanner.Text()
 			clean_input := cleanInput(text)
 			input := clean_input[0]
-			handleinput(input, commands, config)
+			params := clean_input[1:]
+			handleinput(input, commands, config, params)
 		}
 	}
 }

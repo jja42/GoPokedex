@@ -26,6 +26,16 @@ type RespLocationBatch struct {
 	} `json:"results"`
 }
 
+type LocationArea struct {
+	ID                 int
+	Name               string
+	Pokemon_Encounters []struct {
+		Pokemon struct {
+			Name string
+		}
+	}
+}
+
 func GetRequest(url string, config *Config) []byte {
 	res, err := http.Get(url)
 	if err != nil {
@@ -53,4 +63,14 @@ func RequestToLocations(data []byte) (RespLocationBatch, error) {
 		return locations, err
 	}
 	return locations, nil
+}
+
+func RequestToLocation(data []byte) (LocationArea, error) {
+	location := LocationArea{}
+	err := json.Unmarshal(data, &location)
+	if err != nil {
+		fmt.Println(err)
+		return location, err
+	}
+	return location, nil
 }
