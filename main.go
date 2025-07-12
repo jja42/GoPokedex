@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	apireq "github.com/jja42/GoPokedex/internal/api_req"
+	pokecache "github.com/jja42/GoPokedex/internal/pokecache"
 )
 
 type cliCommand struct {
@@ -18,6 +20,8 @@ type cliCommand struct {
 var commands map[string]cliCommand
 
 var config *apireq.Config
+
+var api_cache *pokecache.Cache
 
 const (
 	baseURL = "https://pokeapi.co/api/v2"
@@ -47,9 +51,12 @@ func init() {
 		},
 	}
 
+	api_cache = pokecache.NewCache(5 * time.Second)
+
 	config = &apireq.Config{
 		NextURL: nil,
 		PrevURL: nil,
+		Cache:   api_cache,
 	}
 }
 

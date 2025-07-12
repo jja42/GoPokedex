@@ -6,11 +6,14 @@ import (
 	"io"
 	"log"
 	"net/http"
+
+	"github.com/jja42/GoPokedex/internal/pokecache"
 )
 
 type Config struct {
 	NextURL *string
 	PrevURL *string
+	Cache   *pokecache.Cache
 }
 
 type RespLocationBatch struct {
@@ -23,12 +26,12 @@ type RespLocationBatch struct {
 	} `json:"results"`
 }
 
-func GetRequest(url string) []byte {
+func GetRequest(url string, config *Config) []byte {
 	res, err := http.Get(url)
 	if err != nil {
 		log.Fatal(err)
 	}
-	body, err := io.ReadAll(res.Body)
+	data, err := io.ReadAll(res.Body)
 	res.Body.Close()
 	if res.StatusCode > 299 {
 		log.Fatalf("Response failed with status code: %d\n", res.StatusCode)
@@ -36,7 +39,10 @@ func GetRequest(url string) []byte {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return body
+
+	config.Cache.Add(url, data)
+
+	return data
 }
 
 func RequestToLocations(data []byte) (RespLocationBatch, error) {

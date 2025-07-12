@@ -38,7 +38,13 @@ func commandMap(config *apireq.Config) error {
 		config.NextURL = &url
 	}
 
-	data := apireq.GetRequest(*config.NextURL)
+	key := *config.NextURL
+	var data []byte
+	if cached_data, exists := config.Cache.Get(key); exists {
+		data = cached_data
+	} else {
+		data = apireq.GetRequest(*config.NextURL, config)
+	}
 
 	batch, err := apireq.RequestToLocations(data)
 	if err != nil {
